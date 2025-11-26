@@ -1,10 +1,10 @@
 package Estudiantes.Modelo;
 
 public class Direccion {
-    public String calle;
-    public String numero;
-    public String colonia;
-    public String ciudad;
+    private String calle;
+    private String numero;
+    private String colonia;
+    private String ciudad;
 
     public Direccion(String calle, String numero, String colonia, String ciudad) {
         this.calle = calle;

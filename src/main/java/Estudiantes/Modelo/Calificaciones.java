@@ -6,6 +6,8 @@ public class Calificaciones<T> {
     private int capacidad;
     @SuppressWarnings("unchecked")
     public Calificaciones(int capacidad) {
+
+
         this.tamanio = 0;
         this.capacidad = capacidad;
         this.calificaciones = (T[]) new Object[capacidad];
@@ -15,6 +17,7 @@ public class Calificaciones<T> {
     Metodo de agregar a un arreglo dinamico
      */
     public void agregarCalificacion(T calificacion) {
+        if (capacidad < 0) capacidad = 0;
         if(tamanio == capacidad) {
             capacidad++;
             @SuppressWarnings("unchecked")
