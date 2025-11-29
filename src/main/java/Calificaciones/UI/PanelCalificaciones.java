@@ -2,6 +2,7 @@ package Calificaciones.UI;
 
 import Calificaciones.Estructuras.*;
 import Calificaciones.Modelo.*;
+import Estudiantes.ControlEstudiantes;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -34,9 +35,18 @@ public class PanelCalificaciones extends JPanel {
         colaSolicitudes = new Cola<>();
         pilaDeshacer = new Pila<>();
 
-        // -- Configuracion del disenio del panel (BorderLayout para evitar conflictos)
-        setLayout(new BorderLayout(0, 0));
-        setBackground(new Color(245, 245, 245)); // -- Fondo gris suave
+        initUI();
+    }
+
+        /**
+         * Inicializa y configura la interfaz gráfica de usuario (GUI) del panel.
+         * Define el layout, colores, paneles (encabezado, formulario, tabla)
+         * y sus componentes internos, además de asignar los listeners a los botones.
+         */
+    private void initUI(){
+            // -- Configuracion del disenio del panel (BorderLayout para evitar conflictos)
+            setLayout(new BorderLayout(0, 0));
+            setBackground(new Color(245, 245, 245)); // -- Fondo gris suave
 
         // -- ENCABEZADO (Titulo del modulo)
         JPanel panelHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 15));
@@ -153,7 +163,19 @@ public class PanelCalificaciones extends JPanel {
         // -- Listeners
 
         // -- Boton Encolar
-        btnEncolar.addActionListener(e -> {
+        btnEncolar.addActionListener(e -> encolarSolicitud());
+        // -- Boton Procesar
+        btnProcesar.addActionListener(e -> procesarSiguienteSolicitud());
+        // -- Boton Deshacer
+        btnDeshacer.addActionListener(e -> deshacerAccion());
+    }
+
+        /**
+         * Lee los datos del formulario, valida la entrada y crea una nueva solicitud.
+         * Si los datos son válidos, la solicitud se agrega a la cola de pendientes
+         * y se actualiza la tabla visual.
+         */
+        private void encolarSolicitud() {
             try {
                 String mat = txtMatricula.getText();
                 String cur = txtCurso.getText();
@@ -177,22 +199,16 @@ public class PanelCalificaciones extends JPanel {
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "La calificacion debe ser un numero valido");
             }
-        });
+        }
 
-        // -- Boton Procesar
-        btnProcesar.addActionListener(e -> procesarSiguienteSolicitud());
 
-        // -- Boton Deshacer
-        btnDeshacer.addActionListener(e -> deshacerUltimaAccion());
-    }
-
-    /**
-     * Procesa la siguiente solicitud de calificación en la cola (FIFO).
-     * Extrae la solicitud más antigua, simula su procesamiento y guarda una
-     * acción de "historial" en la pila para permitir deshacer la operación posteriormente.
-     */
-    private void procesarSiguienteSolicitud() {
-        if (colaSolicitudes.esVacia()) {
+        /**
+         * Procesa la siguiente solicitud de calificación en la cola (FIFO).
+         * Extrae la solicitud más antigua, simula su procesamiento y guarda una
+         * acción de "historial" en la pila para permitir deshacer la operación posteriormente.
+         */
+        private void procesarSiguienteSolicitud() {
+            if (colaSolicitudes.esVacia()) {
             JOptionPane.showMessageDialog(this, "No hay solicitudes pendientes");
             return;
         }
@@ -200,62 +216,42 @@ public class PanelCalificaciones extends JPanel {
         // -- Sacamos de la cola (FIFO)
         SolicitudCalificacion solicitud = colaSolicitudes.desencolar();
 
-        /** -- CALIFICACION SIMULADA (CAMBIAR LUEGO POR FAVOR)
-         * Aqui deberiamos buscar al estudiante y obtener su calificacion actual
-         * */
-        float calificacionAnterior = 100.0f;
+       try{
+    int matriculaInt= Integer.parseInt(solicitud.getMatriculaEstudiante());
 
-        Accion accionHistorial = new Accion(
+    if(ControlEstudiantes.existe(matriculaInt)){
+        ControlEstudiantes.agregarCalificacion(matriculaInt, solicitud.getNuevaCalificacion());
+
+        Accion accion= new Accion(
                 Accion.TipoAccion.CAMBIO_CALIFICACION,
-                calificacionAnterior,
+                null,
                 solicitud
         );
-
-        // -- Guardamos en la pila(deshacemos despues)
-        pilaDeshacer.push(accionHistorial);
-
-        // -- Actualizamos la pantalla (quitamos de la tabla)
+        ControlAcciones.registrarAccion(accion);
         modeloTabla.eliminarPrimeraSolicitud();
-
-        lblEstado.setText(" Procesado: " + solicitud.getMatriculaEstudiante());
-        JOptionPane.showMessageDialog(this, "Solicitud procesada correctamente\n(Se guardo una copia en la pila)");
+        lblEstado.setText("Procesado: Nota agregada a " + solicitud.getMatriculaEstudiante());
+    JOptionPane.showMessageDialog(this, "Calificacion registrada correctamente");
+    }else{
+        JOptionPane.showMessageDialog(this, "Error: El estudiante"+matriculaInt  +"no existe");
     }
+
+       }catch(Exception e){
+           JOptionPane.showMessageDialog(this, "Error" + e.getMessage());
+       }
+ }
 
     /**
      * Deshace la última acción realizada utilizando la pila de historial (LIFO).
      * Recupera el estado anterior de la acción más reciente y revierte los cambios
      * (por ejemplo, restaurando una calificación anterior).
      */
-    private void deshacerUltimaAccion() {
-        if (pilaDeshacer.esVacia()) {
-            JOptionPane.showMessageDialog(this, "No hay acciones para deshacer");
-            return;
-        }
-
-        // -- Sacamos de la pila (LIFO)
-        Accion accionDeshacer = pilaDeshacer.pop();
-
-        // -- Tomamos decision dependiendo del ENUM
-        switch (accionDeshacer.getTipo()) {
-            case CAMBIO_CALIFICACION:
-                // -- Recuperamos los datos originales
-                float calificacionOriginal = (float) accionDeshacer.getDatoAnterior();
-                SolicitudCalificacion sol = (SolicitudCalificacion) accionDeshacer.getDatoNuevo();
-
-                /** -- LOGICA DE REVERSION (CAMBIAR LUEGO POR FAVOR)
-                 * X.buscar(sol.getMatricula()).setCalificacion(calificacionOriginal);
-                 */
-
-                lblEstado.setText(" Deshacer: Nota de " + sol.getMatriculaEstudiante() + " restaurada.");
-                JOptionPane.showMessageDialog(this, "Accion deshecha: Nota revertida a " + calificacionOriginal);
-                break;
-
-            case REGISTRO_ESTUDIANTE:
-                JOptionPane.showMessageDialog(this, "Registro deshecho (Pendiente)");
-                break;
-            case INSCRIPCION_CURSO:
-                JOptionPane.showMessageDialog(this, "Inscripcion deshecha (Pendiente)");
-                break;
+    private void deshacerAccion() {
+        try{
+            String resultado= ControlAcciones.deshacerUltima();
+            lblEstado.setText(resultado);
+            JOptionPane.showMessageDialog(this, resultado);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "Aviso: " +e.getMessage());
         }
     }
 
@@ -269,7 +265,7 @@ public class PanelCalificaciones extends JPanel {
         txtCalificacion.setText("");
     }
 
-    // -- Metodo main para pruebas unitarias
+
 
     /**
      * Método principal para ejecutar el panel de manera aislada.
@@ -285,18 +281,26 @@ public class PanelCalificaciones extends JPanel {
                     break;
                 }
             }
+
+            // DATOS DE PRUEBA
+            Estudiantes.Modelo.Estudiante est1 = new Estudiantes.Modelo.Estudiante(
+                    111, "Maria Lopez", "555-999", "maria@test.com", null
+            );
+            ControlEstudiantes.insertar(est1);
+
+            System.out.println(">> Estudiante prueba (111) insertado.");
+
+            JFrame ventana = new JFrame("Prueba Sistema Centralizado");
+            ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            ventana.setSize(950, 600);
+            ventana.setLocationRelativeTo(null);
+
+            PanelCalificaciones panel = new PanelCalificaciones();
+            ventana.add(panel);
+            ventana.setVisible(true);
+
         } catch (Exception e) {
-            System.out.println("No se pudo cargar Nimbus: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        JFrame ventanaPrueba = new JFrame("Prueba Modulo Calificaciones (Bryan)");
-        ventanaPrueba.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventanaPrueba.setSize(950, 600);
-        ventanaPrueba.setLocationRelativeTo(null);
-
-        PanelCalificaciones miPanel = new PanelCalificaciones();
-        ventanaPrueba.add(miPanel);
-
-        ventanaPrueba.setVisible(true);
     }
 }
