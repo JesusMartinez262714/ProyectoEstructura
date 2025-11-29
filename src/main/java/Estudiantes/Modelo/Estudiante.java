@@ -61,6 +61,10 @@ public class Estudiante<T> {
 
     public Estudiante() {
     }
+    public Calificaciones<T> getCalificaciones() {
+        return calificaciones;
+    }
+
 
     @Override
     public String toString() {

@@ -29,6 +29,22 @@ public class Direccion {
         return ciudad;
     }
 
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public void setColonia(String colonia) {
+        this.colonia = colonia;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public void setCalle(String calle) {
+        this.calle = calle;
+    }
+
     @Override
     public String toString() {
         return calle + " " + numero + ", " + colonia + ", " + ciudad;
