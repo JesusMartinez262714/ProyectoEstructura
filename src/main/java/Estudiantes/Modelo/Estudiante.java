@@ -59,6 +59,9 @@ public class Estudiante<T> {
         this.direccion = direccion;
     }
 
+    public Estudiante() {
+    }
+
     @Override
     public String toString() {
         return "Estudiante{" +
