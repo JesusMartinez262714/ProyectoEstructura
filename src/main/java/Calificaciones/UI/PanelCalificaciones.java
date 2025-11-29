@@ -11,8 +11,8 @@ import java.awt.*;
 public class PanelCalificaciones extends JPanel {
 
     // -- Estructuras de datos
-    private Cola<SolicitudCalificacion> colaSolicitudes; // -- Requisito 4.1 (calificaciones) y 8 del documento
-    private Pila<Accion> pilaDeshacer;                   // -- Requisito 9 del documento
+    private final Cola<SolicitudCalificacion> colaSolicitudes; // -- Requisito 4.1 (calificaciones) y 8 del documento
+    private final Pila<Accion> pilaDeshacer;                   // -- Requisito 9 del documento
 
     // -- Componentes visuales
     private JTextField txtMatricula;

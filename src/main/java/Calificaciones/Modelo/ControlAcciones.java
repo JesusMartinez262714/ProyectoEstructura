@@ -7,7 +7,7 @@ import Estudiantes.Modelo.Estudiante;
 public class ControlAcciones {
 
     // -- Pila estatica compartida
-    private static Pila<Accion> pilaGlobal = new Pila<>();
+    private static final Pila<Accion> pilaGlobal = new Pila<>();
 
     /**
      * Cualquier módulo (Estudiantes, Cursos, Calificaciones) llama a este método
@@ -30,31 +30,25 @@ public class ControlAcciones {
         Accion accion = pilaGlobal.pop();
 
         // -- Evaluamos que tipo de acción fue
-        switch (accion.getTipo()) {
-            case CAMBIO_CALIFICACION:
-                return deshacerCalificacion(accion);
-
-            case REGISTRO_ESTUDIANTE:
+        return switch (accion.getTipo()) {
+            case CAMBIO_CALIFICACION -> deshacerCalificacion(accion);
+            case REGISTRO_ESTUDIANTE ->
                 // Logica para borrar un estudiante recien creado
                 // int mat = (int) accion.getDatoNuevo();
                 // ControlEstudiantes.eliminar(mat);
-                return "Se deshizo el registro del último estudiante.";
-
-            case INSCRIPCION_CURSO:
+                    "Se deshizo el registro del último estudiante.";
+            case INSCRIPCION_CURSO ->
                 // Logica para sacar a un alumno de un curso
                 // String cursoID = ...;
                 // ControlCursos.darBaja(matricula, cursoID);
-                return "Se cancelo la ultima inscripcion.";
-
-            case BAJA_CURSO:
+                    "Se cancelo la ultima inscripcion.";
+            case BAJA_CURSO ->
                 // Lógica: Si se dio de baja, deshacer es VOLVER A INSCRIBIR
                 // Recuperar datos: Alumno y Curso
                 // ControlCursos.inscribir(matricula, cursoID);
-                return "Se ha restaurado la inscripción al curso (Deshacer Baja).";
-
-            default:
-                return "Tipo de accion desconocida.";
-        }
+                    "Se ha restaurado la inscripción al curso (Deshacer Baja).";
+            default -> "Tipo de accion desconocida.";
+        };
     }
 
 
