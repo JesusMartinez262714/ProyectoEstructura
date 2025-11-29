@@ -3,27 +3,36 @@ package Estudiantes.UI;
 import javax.swing.*;
 import java.awt.*;
 import Estudiantes.Estructuras.BSTEstudiantes;
+import Estudiantes.UI.Paneles.PanelFormulario;
+import Estudiantes.UI.Paneles.PanelTablaEstudiantes;
 
 public class VentanaEstudiantes extends JFrame {
 
     public static BSTEstudiantes arbolito = new BSTEstudiantes();
+    public static PanelTablaEstudiantes panelTabla;
+    public static PanelFormulario panelFormulario;
 
     public VentanaEstudiantes() {
 
         setTitle("Gestión de Estudiantes (BST)");
-        setSize(700, 550);
+        setSize(1100, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JTabbedPane tabs = new JTabbedPane();
+        panelTabla = new PanelTablaEstudiantes(arbolito);
+        panelFormulario = new PanelFormulario();
 
-        tabs.addTab("Insertar",   new PanelInsertar());
-        tabs.addTab("Buscar",     new PanelBuscar());
-        tabs.addTab("Mostrar",    new PanelMostrar());
-        tabs.addTab("Modificar",  new PanelModificar());
-        tabs.addTab("Eliminar",   new PanelEliminar());
+        JSplitPane split = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT,
+                panelTabla,
+                panelFormulario
+        );
 
-        add(tabs, BorderLayout.CENTER);
+        split.setDividerLocation(700);
+        split.setResizeWeight(0.75);
+        split.setOneTouchExpandable(true);
+
+        add(split, BorderLayout.CENTER);
     }
 
     public static void main(String[] args) {

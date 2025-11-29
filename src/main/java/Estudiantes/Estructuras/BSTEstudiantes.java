@@ -9,6 +9,10 @@
             public void insertarEstudiante(Estudiante estudiante) throws Exception {
                 raiz = insertarRecursivo(raiz,estudiante);
             }
+            public void eliminar(int matricula) throws Exception {
+                raiz = eliminarRec(raiz, matricula);
+            }
+
             public NodoBST buscarEstudiante(int matricula) throws Exception {
                 return buscarRecursivo(raiz,matricula);
             }
@@ -36,6 +40,42 @@
                 }
                 return nodoActual;
             }
+            private NodoBST eliminarRec(NodoBST nodo, int matricula) throws Exception {
+                if (nodo == null) {
+                    throw new Exception("No se encontró el estudiante con matrícula " + matricula);
+                }
+
+                int actual = nodo.getEstudiante().getMatricula();
+
+                if (matricula < actual) {
+                    nodo.setIzquierdo(eliminarRec(nodo.getIzquierdo(), matricula));
+                }
+                else if (matricula > actual) {
+                    nodo.setDerecho(eliminarRec(nodo.getDerecho(), matricula));
+                }
+                else {
+
+                    if (nodo.getIzquierdo() == null && nodo.getDerecho() == null) {
+                        return null;
+                    }
+
+
+                    if (nodo.getIzquierdo() == null) {
+                        return nodo.getDerecho();
+                    }
+                    if (nodo.getDerecho() == null) {
+                        return nodo.getIzquierdo();
+                    }
+
+
+                    NodoBST sucesor = encontrarMin(nodo.getDerecho());
+                    nodo.setEstudiante(sucesor.getEstudiante());
+                    nodo.setDerecho(eliminarRec(nodo.getDerecho(), sucesor.getEstudiante().getMatricula()));
+                }
+
+                return nodo;
+            }
+
 
             private NodoBST buscarRecursivo(NodoBST nodoActual,int  matricula) throws Exception {
                 if(nodoActual == null){
@@ -78,7 +118,42 @@
                 postOrdenRecursivo(nodoActual.getDerecho());
                 System.out.println(nodoActual.getEstudiante());
             }
+            private NodoBST encontrarMin(NodoBST nodo) {
+                while (nodo.getIzquierdo() != null) {
+                    nodo = nodo.getIzquierdo();
+                }
+                return nodo;
+            }
 
+
+            public int contarNodos() {
+                return contarNodosRec(raiz);
+            }
+
+            private int contarNodosRec(NodoBST nodo) {
+                if (nodo == null) return 0;
+                return 1 + contarNodosRec(nodo.getIzquierdo()) + contarNodosRec(nodo.getDerecho());
+            }
+            public Estudiante obtenerEnPosicion(int pos) {
+                Contador c = new Contador();
+                return obtenerEnPosicionRec(raiz, pos, c);
+            }
+
+            private Estudiante obtenerEnPosicionRec(NodoBST nodo, int pos, Contador c) {
+                if (nodo == null) return null;
+
+                Estudiante izq = obtenerEnPosicionRec(nodo.getIzquierdo(), pos, c);
+                if (izq != null) return izq;
+
+                if (c.valor == pos) return nodo.getEstudiante();
+                c.valor++;
+
+                return obtenerEnPosicionRec(nodo.getDerecho(), pos, c);
+            }
+
+            private static class Contador {
+                int valor = 0;
+            }
 
 
 
