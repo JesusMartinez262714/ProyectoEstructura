@@ -34,4 +34,19 @@ public class NodoBST {
     public void setDerecho(NodoBST derecho) {
         this.derecho = derecho;
     }
+
+
+    public boolean esHoja(){
+        return izquierdo == null && derecho == null;
+    }
+
+    public boolean tieneUnHijo(){
+        return (izquierdo != null && derecho == null)||(izquierdo == null && derecho != null);
+    }
+
+    public boolean tieneDosHijos(){
+        return izquierdo != null && derecho != null;
+    }
+
+
 }

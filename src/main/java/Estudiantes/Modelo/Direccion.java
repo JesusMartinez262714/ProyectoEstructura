@@ -28,4 +28,14 @@ public class Direccion {
     public String getCiudad() {
         return ciudad;
     }
+
+    @Override
+    public String toString() {
+        return "Direccion{" +
+                "calle='" + calle + '\'' +
+                ", numero='" + numero + '\'' +
+                ", colonia='" + colonia + '\'' +
+                ", ciudad='" + ciudad + '\'' +
+                '}';
+    }
 }

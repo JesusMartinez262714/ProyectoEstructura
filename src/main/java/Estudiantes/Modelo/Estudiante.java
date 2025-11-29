@@ -58,4 +58,16 @@ public class Estudiante<T> {
     public void setDireccion(Direccion direccion) {
         this.direccion = direccion;
     }
+
+    @Override
+    public String toString() {
+        return "Estudiante{" +
+                "matricula=" + matricula +
+                ", nombreCompleto='" + nombreCompleto + '\'' +
+                ", numeroTelefono='" + numeroTelefono + '\'' +
+                ", correo='" + correo + '\'' +
+                ", direccion=" + direccion +
+                ", calificaciones=" + calificaciones +
+                '}';
+    }
 }
