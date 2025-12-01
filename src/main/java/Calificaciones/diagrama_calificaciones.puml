@@ -1,0 +1,154 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam classAtributeIconSize 0
+skinparam linetype ortho
+
+package "Calificaciones" {
+
+package "Estructuras"{
+
+class Cola <T>{
+-inicio : Nodo<T>
+-fin : Nodo<T>
+-tamanio : int
++ esVacia() : boolean
++ encolar(dato:T)
++ desencolar() : T
++ frente () : T
+}
+
+class Pila<T> {
+            - inicio : Nodo<T>
+            - tamanio : int
+            + esVacia() : boolean
+            + push(dato: T)
+            + pop() : T
+            + cima() : T
+        }
+
+class ListaDobleCircular<T> {
+            - inicio : NodoDoble<T>
+            - tamanio : int
+            + esVacia() : boolean
+            + agregar(dato: T)
+            + eliminarFrente() : T
+            + mostrarAdelante()
+            + mostrarAtras()
+        }
+
+class Nodo<T> {
+            - dato : T
+            - siguiente : Nodo<T>
+            + getDato() : T
+            + setDato(t: T)
+            + getSiguiente() : Nodo<T>
+            + setSiguiente(n: Nodo<T>)
+        }
+
+class NodoDoble<T> {
+            - dato : T
+            - siguiente : NodoDoble<T>
+            - anterior : NodoDoble<T>
+            + getDato() : T
+            + getSiguiente() : NodoDoble<T>
+            + getAnterior() : NodoDoble<T>
+        }
+        }
+
+package "Modelo" {
+class SolicitudCalificacion {
+            - matriculaEstudiante : String
+            - codigoCurso : String
+            - nuevaCalificacion : float
+            + getMatriculaEstudiante() : String
+            + getCodigoCurso() : String
+            + getNuevaCalificacion() : float
+            + setNuevaCalificacion(v: float)
+            + toString() : String
+        }
+
+        class Accion {
+            - tipo : TipoAccion
+            - datoAnterior : Object
+            - datoNuevo : Object
+            + getTipo() : TipoAccion
+            + getDatoAnterior() : Object
+            + getDatoNuevo() : Object
+        }
+
+        enum TipoAccion {
+            INSERTAR
+            MODIFICAR
+            ELIMINAR
+
+        }
+
+        class ControlAcciones {
+            - pilaGlobal : Pila<Accion>
+            + registrarAccion(a: Accion)
+            + deshacerUltima() : String
+            + deshacerCalificacion(a: Accion) : String
+        }
+}
+
+package "UI" {
+class AbstractTableModel
+
+        class ModeloTablaCalificaciones {
+            - nombresColumnas : String[]
+            - listaSolicitudes : List<SolicitudCalificacion>
+            + getRowCount() : int
+            + getColumnCount() : int
+            + getValueAt(r: int, c: int) : Object
+            + agregarSolicitud(s: SolicitudCalificacion)
+            + eliminarPrimeraSolicitud()
+            + limpiarTodo()
+        }
+
+        class PanelCalificaciones {
+            - txtMatricula : JTextField
+            - txtCurso : JTextField
+            - txtCalificacion : JTextField
+            - tablaCola : JTable
+            - lblEstado : JLabel
+            - modeloTabla : ModeloTablaCalificaciones
+            - colaSolicitudes : Cola<SolicitudCalificacion>
+            - pilaDeshacer : Pila<Accion>
+            + initUI()
+            + encolarSolicitud()
+            + procesarSiguienteSolicitud()
+            + deshacerAccion()
+            + limpiarCampos()
+            + main(args: String[])
+        }
+}
+
+}
+
+' Estructura interna
+Pila --> Nodo : "inicio"
+Cola --> Nodo : "inicio, fin"
+ListaDobleCircular --> NodoDoble : "inicio"
+Nodo --> Nodo : "siguiente"
+NodoDoble --> NodoDoble : "sig, ant"
+
+' Relaciones del modelo
+Accion *-- TipoAccion : "usa"
+ControlAcciones --> Pila : "pilaGlobal"
+' Nota: ControlAcciones usa Pila, y esa Pila guarda Acciones
+ControlAcciones ..> Accion : "gestiona"
+
+'Relaciones de la Ui y Modelo
+ModeloTablaCalificaciones --|> AbstractTableModel : "extiende"
+ModeloTablaCalificaciones o--> SolicitudCalificacion : "listaSolicitudes"
+
+PanelCalificaciones --> ModeloTablaCalificaciones : "modeloTabla"
+PanelCalificaciones --> Cola : "colaSolicitudes"
+PanelCalificaciones --> Pila : "pilaDeshacer"
+
+' Relaciones implícitas (Generic binding)
+' Esto indica visualmente qué guardan las estructuras en este caso especifico
+(PanelCalificaciones, Cola) ..> SolicitudCalificacion : "<<bind T>>"
+(PanelCalificaciones, Pila) ..> Accion : "<<bind T>>"
+@enduml
