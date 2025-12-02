@@ -8,21 +8,41 @@ import Cursos.Estructuras.NodoAVL;
 import Estudiantes.Modelo.Estudiante;
 
 /**
- *
+ * Clase que implementa un Árbol Binario de Búsqueda Auto-Balanceado AVL (Adelson-Velsky y Landis).
+ * Este árbol almacena información de estudiantes, siendo ordenado por su promedio (key).
+ * Garantiza que la altura del árbol sea O(log n) mediante rotaciones.
  * @author Leonel
  */
 public class AVL_Promedios {
     
     NodoAVL raiz;
 
+    /**
+     * Obtiene la altura de un nodo. Si el nodo es null, su altura es 0.
+     * @param n El nodo cuya altura se desea conocer.
+     * @return La altura del nodo.
+     */
     private int altura(NodoAVL n) {
         return (n == null) ? 0 : n.altura;
     }
 
+    /**
+     * Calcula el factor de balance de un nodo.
+     * Factor de Balance = Altura del subárbol izquierdo - Altura del subárbol derecho.
+     * @param n El nodo cuyo balance se desea calcular.
+     * @return El factor de balance. Un valor fuera de [-1, 1] indica desbalance.
+     */
     private int obtenerBalance(NodoAVL n) {
         return (n == null) ? 0 : altura(n.izq) - altura(n.der);
     }
 
+    /**
+     * Realiza una Rotación Simple a la Derecha (Right Rotation).
+     * Se usa para corregir desbalances IZQ-IZQ.
+     * 
+     * @param y El nodo desbalanceado (pivot original).
+     * @return La nueva raíz del subárbol después de la rotación (el nodo x).
+     */
     private NodoAVL rotacionDerecha(NodoAVL y) {
         NodoAVL x = y.izq;
         NodoAVL T2 = x.der;
@@ -37,6 +57,13 @@ public class AVL_Promedios {
         return x; 
     }
 
+    /**
+     * Realiza una Rotación Simple a la Izquierda (Left Rotation).
+     * Se usa para corregir desbalances DER-DER. 
+     *
+     * @param x El nodo desbalanceado (pivot original).
+     * @return La nueva raíz del subárbol después de la rotación (el nodo y).
+     */
     private NodoAVL rotacionIzquierda(NodoAVL x) {
         NodoAVL y = x.der;
         NodoAVL T2 = y.izq;
@@ -50,10 +77,23 @@ public class AVL_Promedios {
         return y; 
     }
 
+    /**
+     * Método público para iniciar la inserción de un nuevo estudiante.
+     * @param promedio La clave de ordenamiento (promedio del estudiante).
+     * @param estudiante El objeto Estudiante asociado a la clave.
+     */
     public void insertar(double promedio, Estudiante<?> estudiante) {
         raiz = insertarRec(raiz, promedio, estudiante);
     }
 
+    /**
+     * Método recursivo auxiliar para la inserción y el balanceo del árbol.
+     *
+     * @param nodo La raíz del subárbol actual.
+     * @param promedio La clave a insertar.
+     * @param estudiante El estudiante asociado.
+     * @return La raíz del subárbol después de la inserción y las posibles rotaciones.
+     */
     private NodoAVL insertarRec(NodoAVL nodo, double promedio, Estudiante<?> estudiante) {
 
         if (nodo == null) return new NodoAVL(promedio, estudiante);
@@ -90,11 +130,19 @@ public class AVL_Promedios {
         return nodo;
     }
 
-    // Recorrido in-orden (ordenado)
+    /**
+     * Método público para iniciar el recorrido In-Orden.
+     * El recorrido In-Orden produce los elementos ordenados por clave (promedio).
+     */
     public void inOrden() {
         inOrdenRec(raiz);
     }
 
+    /**
+     * Método recursivo auxiliar para el recorrido In-Orden.
+     * Recorre: Izquierda -> Nodo -> Derecha.
+     * @param nodo La raíz del subárbol actual a recorrer.
+     */
     private void inOrdenRec(NodoAVL nodo) {
         if (nodo == null) return;
 

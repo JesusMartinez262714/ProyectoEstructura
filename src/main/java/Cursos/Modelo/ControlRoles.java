@@ -7,7 +7,9 @@ package Cursos.Modelo;
 import Estudiantes.Modelo.Estudiante;
 
 /**
- *
+ * Clase de control que gestiona la asignación y rotación de roles 
+ * (como tutores, líderes de equipo, etc.) entre los estudiantes de un curso.
+ * Depende de {@code GestionarCursos} para acceder a los datos de los cursos.
  * @author Leonel
  */
 public class ControlRoles {
@@ -17,6 +19,12 @@ public class ControlRoles {
         this.gestorCursos = gestorCursos;
     }
 
+    /**
+     * Realiza la rotación del rol activo dentro de la lista circular de roles de un curso.
+     * El nuevo estudiante seleccionado es quien asume el rol (tutor, líder, etc.).
+     *
+     * @param claveCurso La clave única del curso al cual se le rotará el rol.
+     */
     public void rotarRol(String claveCurso) {
 
         Curso c = gestorCursos.obtenerCurso(claveCurso);

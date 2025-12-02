@@ -8,7 +8,9 @@ import Estudiantes.ControlEstudiantes;
 import Estudiantes.Modelo.Estudiante;
 
 /**
- *
+ * Clase de control que gestiona el proceso de inscripción de estudiantes en cursos.
+ * Actúa como intermediario entre el control de estudiantes y el control de cursos.
+
  * @author Leonel
  */
 public class ControlInscripciones {
@@ -20,6 +22,13 @@ public class ControlInscripciones {
         this.controlCursos = gc;
     }
 
+    /**
+     * Realiza el proceso de inscripción de un estudiante a un curso.
+     * Verifica la existencia del estudiante y del curso, y maneja la lógica de cupo.
+     *
+     * @param matricula La matrícula del estudiante que desea inscribirse.
+     * @param claveCurso La clave única del curso al que se desea inscribir.
+     */
     public void inscribir(int matricula, String claveCurso) throws Exception {
 
         Estudiante e = controlEstudiantes.buscar(matricula);
