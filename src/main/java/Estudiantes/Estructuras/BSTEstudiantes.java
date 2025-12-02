@@ -157,5 +157,8 @@
 
 
 
-
+            public NodoBST getRaiz() {
+                return raiz;
+            }
+            
         }
