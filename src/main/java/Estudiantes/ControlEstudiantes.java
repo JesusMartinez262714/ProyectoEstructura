@@ -1,5 +1,6 @@
 package Estudiantes;
 
+import Cursos.Modelo.AVL_Promedios;
 import Estudiantes.Estructuras.BSTEstudiantes;
 import Estudiantes.Modelo.Estudiante;
 import Estudiantes.Modelo.NodoBST;
@@ -139,8 +140,19 @@ public class ControlEstudiantes {
 
 
 
-    /** Devuelve el árbol (solo lectura) */
-    public static BSTEstudiantes getArbol() {
-        return arbol;
+        public static AVL_Promedios generarAVLPromedios() {
+        AVL_Promedios avl = new AVL_Promedios();
+        recorrerBSTyAgregar(arbol.getRaiz(), avl);
+        return avl;
+    }
+
+    private static void recorrerBSTyAgregar(NodoBST nodo, AVL_Promedios avl) {
+        if (nodo == null) return;
+
+        Estudiante e = nodo.getEstudiante();
+        avl.insertar(e.getPromedio(), e);
+
+        recorrerBSTyAgregar(nodo.getIzquierdo(), avl);
+        recorrerBSTyAgregar(nodo.getDerecho(), avl);
     }
 }
