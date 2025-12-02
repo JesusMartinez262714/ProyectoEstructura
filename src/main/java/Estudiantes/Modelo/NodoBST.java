@@ -1,7 +1,7 @@
 package Estudiantes.Modelo;
 
 public class NodoBST {
-    private Estudiante estudiante;
+    public Estudiante estudiante;
     private NodoBST izquierdo;
     private NodoBST derecho;
 
