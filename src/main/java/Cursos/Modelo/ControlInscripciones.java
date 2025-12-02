@@ -24,18 +24,19 @@ public class ControlInscripciones {
 
         Estudiante e = controlEstudiantes.buscar(matricula);
         if (e == null) {
-            System.out.println("ERROR: No existe un estudiante con matrícula " + matricula);
+            System.out.println("No existe un estudiante con matrícula " + matricula);
             return;
         }
 
         Curso c = controlCursos.obtenerCurso(claveCurso);
         if (c == null) {
-            System.out.println("ERROR: No existe un curso con clave " + claveCurso);
+            System.out.println("No existe un curso con clave " + claveCurso);
             return;
         }
 
         if (c.hayCupo()) {
             c.agregarInscrito(e);
+            c.getRoles().agregar(e);
             System.out.println("Estudiante inscrito en curso: " + c.getNombre());
         } else {
             c.agregarListaEspera(e);

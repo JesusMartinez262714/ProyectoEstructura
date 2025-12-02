@@ -1,5 +1,6 @@
 package Cursos.Modelo;
 
+import Cursos.Estructuras.ListaCircularSimple;
 import Cursos.Estructuras.ListaDobleCircular;
 import Cursos.Estructuras.ListaSimple;
 import Estudiantes.Modelo.Estudiante;
@@ -12,6 +13,7 @@ public class Curso {
     
     private ListaSimple<Estudiante> inscritos;
     private ListaDobleCircular<Estudiante> listaEspera;
+    private ListaCircularSimple<Estudiante> roles;
 
     public Curso(String clave, String nombre, int cupoMaximo) {
         this.clave = clave;
@@ -19,6 +21,7 @@ public class Curso {
         this.cupoMaximo = cupoMaximo;
         inscritos = new ListaSimple<>();
         listaEspera = new ListaDobleCircular<>();
+        roles = new ListaCircularSimple<>();
     }
     
      public boolean hayCupo() {
@@ -29,6 +32,7 @@ public class Curso {
         inscritos.agregarFinal(e);
     }
 
+    //metodos
     public void agregarListaEspera(Estudiante e) {
         listaEspera.agregar(e);
     }
@@ -39,6 +43,19 @@ public class Curso {
 
     public ListaDobleCircular<Estudiante> getListaEspera() {
         return listaEspera;
+    }
+    
+    //metodos de roles
+     public ListaCircularSimple<Estudiante> getRoles() {
+        return roles;
+    }
+
+    public void agregarRol(Estudiante e) {
+        roles.agregar(e);
+    }
+
+    public Estudiante rotarRol() {
+        return roles.rotar();
     }
 
     public String getClave() {
