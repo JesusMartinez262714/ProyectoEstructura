@@ -85,8 +85,14 @@ public class ListaSimple<T> implements Iterable<T> {
         };
     }
     
+    //METODOS PARA INSCRIPCIONES
     
-
+    /**
+         * Agrega un nuevo elemento al final de la lista.
+         * Esta operación es de tiempo constante O(1).
+         *
+         * @param dato El dato del tipo T a ser agregado.
+         */
     public void agregarFinal(T dato) {
         NodoSimple n = new NodoSimple(dato);
         if (inicio == null) {
@@ -97,8 +103,15 @@ public class ListaSimple<T> implements Iterable<T> {
         }
         size++;
     }
+    
+    /**
+     * Retorna el número de elementos contenidos en la lista.
+     * @return El tamaño actual de la lista.
+     */
 
     public int size() { return size; }
 
     
+    
+    // METODOS PARA LA ROTACION DE ROLES
 }
