@@ -113,5 +113,5 @@ public class ListaSimple<T> implements Iterable<T> {
 
     
     
-    // METODOS PARA LA ROTACION DE ROLES
+    
 }
