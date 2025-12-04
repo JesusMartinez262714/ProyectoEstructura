@@ -6,11 +6,22 @@ import Estudiantes.Modelo.Estudiante;
 import Estudiantes.Modelo.Direccion;
 import Estudiantes.UI.VentanaEstudiantes;
 
+/**
+ * Panel dedicado a la modificación de datos de un estudiante existente.
+ * Permite editar la información y actualizarla en el modelo de datos.
+ * <p>Complejidad Espacial General: O(1) (Número fijo de componentes visuales).</p>
+ */
 public class PanelModificar extends JPanel {
 
     private JTextField tMatricula, tNombre, tTel, tCorreo, tCalle, tNumero, tColonia, tCiudad;
     private Estudiante estudianteActual;
 
+    /**
+     * Constructor del panel de modificación.
+     * Inicializa los componentes gráficos y los listeners.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     public PanelModificar() {
 
         setLayout(new BorderLayout());
@@ -27,7 +38,7 @@ public class PanelModificar extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         tMatricula = new JTextField(12);
-        tMatricula.setEditable(false);
+        tMatricula.setEditable(false); // La matrícula no se debe editar, es la clave primaria
 
         tNombre = new JTextField(12);
         tTel = new JTextField(12);
@@ -59,6 +70,10 @@ public class PanelModificar extends JPanel {
         btnGuardarCambios.addActionListener(e -> guardarCambios());
     }
 
+    /**
+     * Método auxiliar para agregar componentes al GridBagLayout.
+     * <p>Complejidad Temporal: O(1)</p>
+     */
     private void addRow(JPanel panel, GridBagConstraints gbc, int fila, String texto, JComponent campo) {
         gbc.gridx = 0; gbc.gridy = fila; gbc.anchor = GridBagConstraints.EAST;
         panel.add(new JLabel(texto), gbc);
@@ -67,6 +82,12 @@ public class PanelModificar extends JPanel {
         panel.add(campo, gbc);
     }
 
+    /**
+     * Carga los datos de un objeto Estudiante en los campos de texto del formulario.
+     * @param est El estudiante a editar.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     public void cargarEstudiante(Estudiante est) {
 
         estudianteActual = est;
@@ -84,6 +105,12 @@ public class PanelModificar extends JPanel {
         }
     }
 
+    /**
+     * Valida los campos y actualiza la información del objeto Estudiante actual.
+     * Refresca la tabla principal para reflejar los cambios.
+     * <p>Complejidad Temporal: O(n) (Debido al refresco de la tabla visual que recorre los nodos).</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     private void guardarCambios() {
         try {
             if (estudianteActual == null) {
@@ -129,6 +156,11 @@ public class PanelModificar extends JPanel {
         }
     }
 
+    /**
+     * Agrega un KeyListener para restringir la entrada a solo números.
+     * @param campo El JTextField a restringir.
+     * <p>Complejidad Temporal: O(1)</p>
+     */
     private void soloNumeros(JTextField campo) {
         campo.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override

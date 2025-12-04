@@ -3,10 +3,11 @@ package Calificaciones.Modelo;
 /**
  * Representa una acción realizada en el sistema, utilizada para registrar cambios
  * y permitir operaciones de deshacer (undo) o auditoría.
+ * <p>Complejidad Espacial General: O(1) por cada instancia de Accion creada.</p>
  */
 public class Accion {
 
-        // -- La utilizacion de Enum es para saber que tipo de accion se realizo
+    // -- La utilizacion de Enum es para saber que tipo de accion se realizo
     /**
      * Define los tipos de acciones que pueden ser registradas en el sistema.
      */
@@ -27,6 +28,8 @@ public class Accion {
      * @param tipo         El tipo de acción realizada.
      * @param datoAnterior El estado o dato antes de realizar la acción (para revertir).
      * @param datoNuevo    El nuevo estado o dato resultante de la acción.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public Accion(TipoAccion tipo, Object datoAnterior, Object datoNuevo) {
         this.tipo = tipo;
@@ -38,6 +41,8 @@ public class Accion {
      * Obtiene el tipo de acción realizada.
      *
      * @return El tipo de acción.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public TipoAccion getTipo() {
         return tipo;
@@ -47,6 +52,8 @@ public class Accion {
      * Obtiene el dato anterior a la acción.
      *
      * @return El objeto que representa el estado previo.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public Object getDatoAnterior() {
         return datoAnterior;
@@ -56,6 +63,8 @@ public class Accion {
      * Obtiene el nuevo dato resultante de la acción.
      *
      * @return El objeto que representa el nuevo estado.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public Object getDatoNuevo() {
         return datoNuevo;

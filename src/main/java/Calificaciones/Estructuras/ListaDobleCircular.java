@@ -4,6 +4,7 @@ package Calificaciones.Estructuras;
  * Clase genérica que implementa una Lista Doble Circular.
  * En esta estructura, cada nodo tiene referencias al siguiente y al anterior.
  * El último nodo apunta al primero y el primero apunta al último, formando un ciclo cerrado.
+ * <p>Complejidad Espacial General: O(n), donde n es el número de elementos en la lista.</p>
  *
  * @param <T> El tipo de dato que almacenará la lista.
  */
@@ -15,6 +16,8 @@ public class ListaDobleCircular <T>{
     /**
      * Constructor por defecto.
      * Inicializa la lista como vacía.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public ListaDobleCircular(){
         this.inicio = null;
@@ -25,6 +28,8 @@ public class ListaDobleCircular <T>{
      * Verifica si la lista está vacía.
      *
      * @return true si la lista no contiene nodos, false en caso contrario.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public boolean esVacia(){
         return inicio == null;
@@ -34,6 +39,8 @@ public class ListaDobleCircular <T>{
      * Obtiene la cantidad actual de elementos en la lista.
      *
      * @return El tamaño de la lista.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public int getTamanio(){
         return tamanio;
@@ -43,8 +50,11 @@ public class ListaDobleCircular <T>{
     /**
      * Agrega un nuevo nodo al "final" de la lista circular.
      * El nuevo nodo se inserta entre el último nodo actual y el nodo de inicio.
+     * Gracias a la referencia circular 'anterior' del inicio, accedemos al último en O(1).
      *
      * @param dato El dato a agregar a la lista.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1) (Crea un nuevo nodo)</p>
      */
     public void agregar(T dato){
 
@@ -73,6 +83,8 @@ public class ListaDobleCircular <T>{
      * Ajusta los punteros del último nodo y del nuevo inicio para mantener la circularidad.
      *
      * @return El dato eliminado, o null si la lista estaba vacía.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public T eliminarFrente(){
         if(esVacia()) return null;
@@ -96,6 +108,8 @@ public class ListaDobleCircular <T>{
     /**
      * Recorre e imprime los elementos de la lista en orden secuencial (hacia adelante),
      * comenzando desde el inicio hasta volver al principio.
+     * <p>Complejidad Temporal: O(n)</p>
+     * <p>Complejidad Espacial: O(1) (Auxiliar)</p>
      */
     public void mostrarAdelante(){
         if(esVacia()) {
@@ -109,13 +123,15 @@ public class ListaDobleCircular <T>{
             System.out.println(" -- "+aux.getDato()+ " -- --> ");
             aux= aux.getSiguiente();
         }while(aux!=inicio);
-            System.out.println(" --> "+inicio.getDato()); // -- Mostramos que terminamos de recorrer la lista
+        System.out.println(" --> "+inicio.getDato()); // -- Mostramos que terminamos de recorrer la lista
 
-        }
+    }
 
     /**
      * Recorre e imprime los elementos de la lista en orden inverso (hacia atrás),
      * comenzando desde el último nodo agregado hasta llegar al inicio.
+     * <p>Complejidad Temporal: O(n)</p>
+     * <p>Complejidad Espacial: O(1) (Auxiliar)</p>
      */
     public void mostrarAtras(){
         if(esVacia()) return;

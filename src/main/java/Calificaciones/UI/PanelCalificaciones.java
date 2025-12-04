@@ -3,16 +3,24 @@ package Calificaciones.UI;
 import Calificaciones.Estructuras.*;
 import Calificaciones.Modelo.*;
 import Estudiantes.ControlEstudiantes;
+import Main.DatosGlobales; // Importante para validar cursos
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+/**
+ * Panel de interfaz gráfica para la gestión de calificaciones.
+ * Permite encolar solicitudes de cambio de nota y procesarlas secuencialmente.
+ * <p>Complejidad Espacial General: O(1) (Referente a la lógica de control, sin contar la memoria de los componentes gráficos de Swing)</p>
+ */
 public class PanelCalificaciones extends JPanel {
 
     // -- Estructuras de datos
-    private final Cola<SolicitudCalificacion> colaSolicitudes; // -- Requisito 4.1 (calificaciones) y 8 del documento
-    private final Pila<Accion> pilaDeshacer;                   // -- Requisito 9 del documento
+    private final Cola<SolicitudCalificacion> colaSolicitudes;
+    private final Pila<Accion> pilaDeshacer;
 
     // -- Componentes visuales
     private JTextField txtMatricula;
@@ -21,50 +29,47 @@ public class PanelCalificaciones extends JPanel {
 
     // -- Componentes de la tabla
     private JTable tablaCola;
-    private ModeloTablaCalificaciones modeloTabla; // -- Clase personalizada para manejar la vista
-    private JLabel lblEstado; // -- Barra de estado inferior
+    private ModeloTablaCalificaciones modeloTabla;
+    private JLabel lblEstado;
 
     /**
      * Constructor del panel.
-     * Inicializa las estructuras de datos (Cola y Pila), configura el diseño (Layout),
-     * crea los componentes visuales del formulario y la tabla, y asigna los listeners
-     * a los botones.
+     * Inicializa las estructuras de datos y la interfaz gráfica.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public PanelCalificaciones() {
-        // -- Inicializamos las estructuras de datos
+        // Inicializamos las estructuras
         colaSolicitudes = new Cola<>();
         pilaDeshacer = new Pila<>();
 
         initUI();
     }
 
-        /**
-         * Inicializa y configura la interfaz gráfica de usuario (GUI) del panel.
-         * Define el layout, colores, paneles (encabezado, formulario, tabla)
-         * y sus componentes internos, además de asignar los listeners a los botones.
-         */
-    private void initUI(){
-            // -- Configuracion del disenio del panel (BorderLayout para evitar conflictos)
-            setLayout(new BorderLayout(0, 0));
-            setBackground(new Color(245, 245, 245)); // -- Fondo gris suave
+    private void initUI() {
+        setLayout(new BorderLayout(0, 0));
+        setBackground(new Color(245, 245, 245));
 
-        // -- ENCABEZADO (Titulo del modulo)
+        // ==========================================
+        // 1. ENCABEZADO
+        // ==========================================
         JPanel panelHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 15));
         panelHeader.setBackground(new Color(45, 52, 54));
         JLabel lblTitulo = new JLabel("MODULO DE CALIFICACIONES");
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         panelHeader.add(lblTitulo);
-
         add(panelHeader, BorderLayout.NORTH);
 
-        // -- PANEL IZQUIERDO (Formulario)
+        // ==========================================
+        // 2. PANEL IZQUIERDO (Formulario y Botones)
+        // ==========================================
         JPanel panelIzquierdo = new JPanel(new BorderLayout());
         panelIzquierdo.setPreferredSize(new Dimension(320, 0));
         panelIzquierdo.setBorder(new EmptyBorder(10, 10, 10, 10));
         panelIzquierdo.setOpaque(false);
 
-        // -- Contenedor del formulario
+        // -- Formulario --
         JPanel formContainer = new JPanel(new GridBagLayout());
         formContainer.setBorder(BorderFactory.createTitledBorder("Formulario de solicitud"));
         formContainer.setBackground(Color.WHITE);
@@ -73,62 +78,48 @@ public class PanelCalificaciones extends JPanel {
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // -- Campo matricula
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
+        // Matricula
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0;
         formContainer.add(new JLabel("Matricula:"), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
+        gbc.gridx = 1; gbc.weightx = 1.0;
         txtMatricula = new JTextField();
         formContainer.add(txtMatricula, gbc);
 
-        // -- Campo curso
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
+        // Curso (ID)
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0;
         formContainer.add(new JLabel("ID Curso:"), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
+        gbc.gridx = 1; gbc.weightx = 1.0;
         txtCurso = new JTextField();
         formContainer.add(txtCurso, gbc);
 
-        // -- Campo calificacion
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.weightx = 0;
+        // Calificación
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0;
         formContainer.add(new JLabel("Nueva Nota:"), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
+        gbc.gridx = 1; gbc.weightx = 1.0;
         txtCalificacion = new JTextField();
         formContainer.add(txtCalificacion, gbc);
 
-        // -- Boton encolar
+        // Botón Encolar (Azul)
         JButton btnEncolar = new JButton("Encolar Solicitud");
-        btnEncolar.setBackground(new Color(9, 132, 227)); // -- Azul institucional
-        btnEncolar.setForeground(Color.WHITE);
+        configurarBotonColor(btnEncolar, new Color(9, 132, 227), new Color(9, 132, 227));
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        gbc.ipady = 10;
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.ipady = 10;
         formContainer.add(btnEncolar, gbc);
 
-        // -- Agregamos formulario al panel izquierdo
         panelIzquierdo.add(formContainer, BorderLayout.NORTH);
 
-        // -- Panel de botones de accion (Procesar/Deshacer)
-        JPanel panelAcciones = new JPanel(new GridLayout(2, 1, 0, 10));
+        // -- Panel de Acciones (Procesar/Deshacer) --
+        JPanel panelAcciones = new JPanel(new GridLayout(2, 1, 0, 15));
         panelAcciones.setOpaque(false);
         panelAcciones.setBorder(new EmptyBorder(20, 0, 0, 0));
 
         JButton btnProcesar = new JButton("Procesar Siguiente (FIFO)");
-        btnProcesar.setBackground(new Color(0, 184, 148)); // -- Verde
-        btnProcesar.setForeground(Color.WHITE);
+        // Color Verde intenso, borde verde oscuro
+        configurarBotonColor(btnProcesar, new Color(39, 174, 96), new Color(30, 130, 76));
 
         JButton btnDeshacer = new JButton("Deshacer Ultima Accion (LIFO)");
-        btnDeshacer.setBackground(new Color(214, 48, 49)); // -- Rojo
-        btnDeshacer.setForeground(Color.WHITE);
+        // Color Rojo intenso, borde rojo oscuro
+        configurarBotonColor(btnDeshacer, new Color(231, 76, 60), new Color(192, 57, 43));
 
         panelAcciones.add(btnProcesar);
         panelAcciones.add(btnDeshacer);
@@ -136,12 +127,13 @@ public class PanelCalificaciones extends JPanel {
         panelIzquierdo.add(panelAcciones, BorderLayout.CENTER);
         add(panelIzquierdo, BorderLayout.WEST);
 
-        // -- PANEL CENTRAL (Tabla de visualizacion)
+        // ==========================================
+        // 3. PANEL CENTRAL (Tabla)
+        // ==========================================
         JPanel panelCentral = new JPanel(new BorderLayout());
         panelCentral.setBorder(new EmptyBorder(10, 0, 10, 10));
         panelCentral.setOpaque(false);
 
-        // -- Configuracion de la tabla con el modelo personalizado
         modeloTabla = new ModeloTablaCalificaciones();
         tablaCola = new JTable(modeloTabla);
         tablaCola.setRowHeight(25);
@@ -153,183 +145,155 @@ public class PanelCalificaciones extends JPanel {
 
         add(panelCentral, BorderLayout.CENTER);
 
-        // -- BARRA DE ESTADO
+        // ==========================================
+        // 4. BARRA DE ESTADO
+        // ==========================================
         JPanel panelEstado = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelEstado.setBackground(Color.WHITE);
         lblEstado = new JLabel(" Sistema listo.");
         panelEstado.add(lblEstado);
         add(panelEstado, BorderLayout.SOUTH);
 
-        // -- Listeners
-
-        // -- Boton Encolar
+        // -- Listeners --
         btnEncolar.addActionListener(e -> encolarSolicitud());
-        // -- Boton Procesar
         btnProcesar.addActionListener(e -> procesarSiguienteSolicitud());
-        // -- Boton Deshacer
         btnDeshacer.addActionListener(e -> deshacerAccion());
     }
 
-        /**
-         * Lee los datos del formulario, valida la entrada y crea una nueva solicitud.
-         * Si los datos son válidos, la solicitud se agrega a la cola de pendientes
-         * y se actualiza la tabla visual.
-         */
-        private void encolarSolicitud() {
+    // --- MÉTODO MÁGICO PARA ARREGLAR COLORES EN NIMBUS ---
+    private void configurarBotonColor(JButton btn, Color bgColor, Color borderColor) {
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setBackground(bgColor);
 
+        // Trucos para anular el estilo de Nimbus:
+        btn.setContentAreaFilled(false);
+        btn.setOpaque(true);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(borderColor, 1),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Efecto Hover simple
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                btn.setBackground(bgColor.brighter()); // Un poco más claro al pasar mouse
+            }
+            public void mouseExited(MouseEvent evt) {
+                btn.setBackground(bgColor); // Volver al original
+            }
+        });
+    }
+
+    /**
+     * Valida los datos del formulario y agrega una solicitud a la cola.
+     * Realiza búsquedas en el Hash Map de cursos para validar existencia.
+     * <p>Complejidad Temporal: O(1) (Búsqueda en Hash Map y Encolado son constantes)</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
+    private void encolarSolicitud() {
+        try {
             String mat = txtMatricula.getText().trim();
-            String cur = txtCurso.getText().trim().toUpperCase();
-            String notaTxt = txtCalificacion.getText().trim();
+            String idCurso = txtCurso.getText().trim();
 
-            if (!Validador.hayTexto(mat) || !Validador.hayTexto(cur) || !Validador.hayTexto(notaTxt)) {
-                mostrarError("Error: Todos los campos son obligatorios.");
+            // 1. Validaciones básicas
+            if (mat.isEmpty() || idCurso.isEmpty() || txtCalificacion.getText().isEmpty()) {
+                mostrarError("Todos los campos son obligatorios");
                 return;
             }
 
-            if (!Validador.esMatriculaValida(mat)) {
-                mostrarError("Error en Matrícula: Solo se permiten números enteros (Ej: 1111).");
+            // 2. VALIDACIÓN DEL ID DEL CURSO (Importante)
+            if (DatosGlobales.cursos.obtenerCurso(idCurso) == null) {
+                mostrarError("Error: No existe ningún curso con el ID '" + idCurso + "'");
                 return;
             }
 
-            if (!Validador.esCursoValido(cur)) {
-                mostrarError("Error en Curso: Debe tener entre 3 y 7 caracteres alfanuméricos (Ej: MAT101).");
+            // 3. Validación de la nota
+            float cal = Float.parseFloat(txtCalificacion.getText());
+            if (cal < 0 || cal > 100) {
+                mostrarError("La calificación debe estar entre 0 y 100");
                 return;
             }
 
-            if (!Validador.esNotaValida(notaTxt)) {
-                mostrarError("Error en Nota: Debe ser un número entre 0 y 100.");
-                return;
-            }
+            // 4. Encolar
+            SolicitudCalificacion solicitud = new SolicitudCalificacion(mat, idCurso, cal);
+            colaSolicitudes.encolar(solicitud);
+            modeloTabla.agregarSolicitud(solicitud);
 
-            try {
-                float cal = Float.parseFloat(notaTxt);
+            lblEstado.setText(" Solicitud agregada para: " + mat + " en curso " + idCurso);
+            limpiarCampos();
 
-                SolicitudCalificacion sol = new SolicitudCalificacion(mat, cur, cal);
-
-                colaSolicitudes.encolar(sol);
-                modeloTabla.agregarSolicitud(sol);
-
-                lblEstado.setText(" Encolado exitoso: " + mat);
-                limpiarCampos();
-
-            } catch (Exception ex) {
-                mostrarError("Ocurrió un error inesperado al guardar.");
-            }
+        } catch (NumberFormatException ex) {
+            mostrarError("La calificación debe ser un número válido");
         }
+    }
 
-
-        /**
-         * Procesa la siguiente solicitud de calificación en la cola (FIFO).
-         * Extrae la solicitud más antigua, simula su procesamiento y guarda una
-         * acción de "historial" en la pila para permitir deshacer la operación posteriormente.
-         */
-        private void procesarSiguienteSolicitud() {
-            if (colaSolicitudes.esVacia()) {
+    /**
+     * Procesa la solicitud al frente de la cola (FIFO).
+     * Busca al estudiante en el BST y agrega la calificación.
+     * <p>Complejidad Temporal: O(log n) por la búsqueda en el BST de estudiantes + O(k) por eliminar de la tabla visual (donde k son las solicitudes pendientes).</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
+    private void procesarSiguienteSolicitud() {
+        if (colaSolicitudes.esVacia()) {
             JOptionPane.showMessageDialog(this, "No hay solicitudes pendientes");
             return;
         }
 
-        // -- Sacamos de la cola (FIFO)
         SolicitudCalificacion solicitud = colaSolicitudes.desencolar();
 
-       try{
-    int matriculaInt= Integer.parseInt(solicitud.getMatriculaEstudiante());
+        try {
+            int matriculaInt = Integer.parseInt(solicitud.getMatriculaEstudiante());
 
-    if(ControlEstudiantes.existe(matriculaInt)){
-        ControlEstudiantes.agregarCalificacion(matriculaInt, solicitud.getNuevaCalificacion());
+            if (ControlEstudiantes.existe(matriculaInt)) {
+                // Agregar nota
+                ControlEstudiantes.agregarCalificacion(matriculaInt, solicitud.getNuevaCalificacion());
 
-        Accion accion= new Accion(
-                Accion.TipoAccion.CAMBIO_CALIFICACION,
-                null,
-                solicitud
-        );
-        ControlAcciones.registrarAccion(accion);
-        modeloTabla.eliminarPrimeraSolicitud();
-        lblEstado.setText("Procesado: Nota agregada a " + solicitud.getMatriculaEstudiante());
-    JOptionPane.showMessageDialog(this, "Calificacion registrada correctamente");
-    }else{
-        JOptionPane.showMessageDialog(this, "Error: El estudiante"+matriculaInt  +"no existe");
-    }
+                // Guardar para Undo
+                Accion accion = new Accion(
+                        Accion.TipoAccion.CAMBIO_CALIFICACION,
+                        null,
+                        solicitud
+                );
+                ControlAcciones.registrarAccion(accion);
 
-       }catch(Exception e){
-           JOptionPane.showMessageDialog(this, "Error" + e.getMessage());
-       }
- }
+                modeloTabla.eliminarPrimeraSolicitud();
+                lblEstado.setText("Procesado: Nota agregada a " + solicitud.getMatriculaEstudiante());
+                JOptionPane.showMessageDialog(this, "Calificación registrada correctamente");
 
-    /**
-     * Deshace la última acción realizada utilizando la pila de historial (LIFO).
-     * Recupera el estado anterior de la acción más reciente y revierte los cambios
-     * (por ejemplo, restaurando una calificación anterior).
-     */
-    private void deshacerAccion() {
-        try{
-            String resultado= ControlAcciones.deshacerUltima();
-            lblEstado.setText(resultado);
-            JOptionPane.showMessageDialog(this, resultado);
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "Aviso: " +e.getMessage());
+            } else {
+                mostrarError("Error: El estudiante con matrícula " + matriculaInt + " no existe");
+            }
+
+        } catch (Exception e) {
+            mostrarError("Error al procesar: " + e.getMessage());
         }
     }
 
     /**
-     * Limpia los campos de texto del formulario de solicitud.
-     * Se utiliza después de encolar exitosamente una solicitud.
+     * Deshace la última acción registrada en la pila global.
+     * <p>Complejidad Temporal: Variable según la acción (Generalmente O(log n) si implica búsqueda en BST).</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
+    private void deshacerAccion() {
+        try {
+            String resultado = ControlAcciones.deshacerUltima();
+            lblEstado.setText(resultado);
+            JOptionPane.showMessageDialog(this, resultado);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Aviso: " + e.getMessage());
+        }
+    }
+
     private void limpiarCampos() {
         txtMatricula.setText("");
         txtCurso.setText("");
         txtCalificacion.setText("");
     }
 
-    /**
-     * Muestra un cuadro de diálogo con un mensaje de error.
-     * Se utiliza para notificar al usuario sobre fallos en la validación o errores en el procesamiento.
-     *
-     * @param mensaje El texto descriptivo del error a mostrar.
-     */
     private void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(
-                this,
-                mensaje,
-                "Error de Validación",
-                JOptionPane.ERROR_MESSAGE
-        );
-    }
-
-    /**
-     * Método principal para ejecutar el panel de manera aislada.
-     * Útil para pruebas unitarias de la interfaz gráfica sin iniciar toda la aplicación.
-     *
-     * @param args Argumentos de la línea de comandos (no utilizados).
-     */
-    public static void main(String[] args) {
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-
-            // DATOS DE PRUEBA
-            Estudiantes.Modelo.Estudiante est1 = new Estudiantes.Modelo.Estudiante(
-                    111, "Maria Lopez", "555-999", "maria@test.com", null
-            );
-            ControlEstudiantes.insertar(est1);
-
-            System.out.println(">> Estudiante prueba (111) insertado.");
-
-            JFrame ventana = new JFrame("Prueba Sistema Centralizado");
-            ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            ventana.setSize(950, 600);
-            ventana.setLocationRelativeTo(null);
-
-            PanelCalificaciones panel = new PanelCalificaciones();
-            ventana.add(panel);
-            ventana.setVisible(true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        JOptionPane.showMessageDialog(this, mensaje, "Error de Validación", JOptionPane.ERROR_MESSAGE);
     }
 }

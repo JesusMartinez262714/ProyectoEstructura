@@ -10,11 +10,18 @@ import Estudiantes.Modelo.Estudiante;
  * Clase de control que gestiona la asignación y rotación de roles 
  * (como tutores, líderes de equipo, etc.) entre los estudiantes de un curso.
  * Depende de {@code GestionarCursos} para acceder a los datos de los cursos.
+ * <p>Complejidad Espacial General: O(1) (Solo mantiene una referencia al gestor).</p>
  * @author Leonel
  */
 public class ControlRoles {
     private GestionarCursos gestorCursos;
 
+    /**
+     * Constructor de la clase ControlRoles.
+     * @param gestorCursos Instancia del gestor de cursos.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     public ControlRoles(GestionarCursos gestorCursos) {
         this.gestorCursos = gestorCursos;
     }
@@ -24,6 +31,8 @@ public class ControlRoles {
      * El nuevo estudiante seleccionado es quien asume el rol (tutor, líder, etc.).
      *
      * @param claveCurso La clave única del curso al cual se le rotará el rol.
+     * <p>Complejidad Temporal: O(1) promedio (Búsqueda en Hash Map + Rotación de puntero en Lista Circular).</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public void rotarRol(String claveCurso) {
 

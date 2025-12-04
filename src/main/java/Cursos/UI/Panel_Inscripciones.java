@@ -15,6 +15,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
+/**
+ * Panel de interfaz gráfica para gestionar la inscripción de estudiantes a cursos.
+ * Permite inscribir alumnos verificando cupos y gestionando listas de espera.
+ * <p>Complejidad Espacial General: O(1) (Referente a la lógica de control).</p>
+ */
 public class Panel_Inscripciones extends JPanel {
 
     private GestionarCursos gestor;
@@ -30,6 +35,12 @@ public class Panel_Inscripciones extends JPanel {
 
     private JLabel lblEstado;
 
+    /**
+     * Constructor del panel de inscripciones.
+     * Inicializa la referencia al gestor de cursos y construye la interfaz.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     public Panel_Inscripciones() {
         gestor = DatosGlobales.cursos;
         initUI();
@@ -60,7 +71,7 @@ public class Panel_Inscripciones extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Campo clave del curso
-        gbc.gridx = 0; 
+        gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0;
         panelForm.add(new JLabel("Clave del curso:"), gbc);
@@ -82,9 +93,23 @@ public class Panel_Inscripciones extends JPanel {
         // Botón inscribir
         gbc.gridx = 0; gbc.gridy = 2;
         gbc.gridwidth = 2;
-        JButton btnInscribir = new JButton("Inscribir");
-        btnInscribir.setBackground(new Color(9, 132, 227));
-        btnInscribir.setForeground(Color.WHITE);
+        gbc.fill = GridBagConstraints.HORIZONTAL; // Que ocupe todo el ancho disponible
+        gbc.insets = new Insets(15, 8, 8, 8); // Un poco más de espacio arriba
+
+        JButton btnInscribir = new JButton("INSCRIBIR");
+
+        btnInscribir.setBackground(new Color(9, 132, 227)); // Color de fondo azul sólido
+        btnInscribir.setForeground(Color.WHITE); // Texto blanco
+        btnInscribir.setFont(new Font("Segoe UI", Font.BOLD, 14)); // Fuente
+
+        btnInscribir.setFocusPainted(false); // Quita el recuadro interno al hacer clic
+        btnInscribir.setBorderPainted(false); // QUITA EL BORDE DEL BOTÓN
+        btnInscribir.setOpaque(true); // Asegura que se pinte el color de fondo sólido
+
+        btnInscribir.setBorder(BorderFactory.createEmptyBorder(12, 0, 12, 0));
+
+        btnInscribir.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Cursor de mano
+
         panelForm.add(btnInscribir, gbc);
 
         JPanel panelIzq = new JPanel(new BorderLayout());
@@ -156,6 +181,12 @@ public class Panel_Inscripciones extends JPanel {
     //  LÓGICA PRINCIPAL DEL PANEL
     // ================================
 
+    /**
+     * Realiza el proceso de inscripción de un estudiante a un curso.
+     * Busca el curso y el estudiante, verifica cupos y actualiza las listas correspondientes.
+     * <p>Complejidad Temporal: O(log n) [Búsqueda Estudiante] + O(1) [Búsqueda Curso] + O(m) [Agregar Rol, donde m son alumnos en el curso].</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     private void inscribir() throws Exception {
 
         String claveCurso = txtClaveCurso.getText().trim();
@@ -189,7 +220,7 @@ public class Panel_Inscripciones extends JPanel {
                 curso.agregarInscrito(est);
                 curso.agregarRol(est);
                 JOptionPane.showMessageDialog(this,
-                    "Rol asignado al estudiante: " + est.getNombreCompleto());
+                        "Rol asignado al estudiante: " + est.getNombreCompleto());
                 modeloInscritos.addRow(new Object[]{
                         est.getMatricula(),
                         est.getNombreCompleto()

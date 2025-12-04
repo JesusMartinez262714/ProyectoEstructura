@@ -5,8 +5,19 @@ import java.awt.*;
 import Estudiantes.Modelo.*;
 import Estudiantes.UI.VentanaEstudiantes;
 
+/**
+ * Panel que proporciona el formulario para registrar nuevos estudiantes.
+ * Realiza validaciones de entrada y comunica la inserción al árbol BST global.
+ * <p>Complejidad Espacial General: O(1) (Número fijo de componentes visuales).</p>
+ */
 public class PanelInsertar extends JPanel {
 
+    /**
+     * Constructor del panel.
+     * Inicializa los componentes, el diseño (GridBagLayout) y los listeners de los botones.
+     * <p>Complejidad Temporal: O(1) (Inicialización de componentes).</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     public PanelInsertar() {
 
         setLayout(new BorderLayout());
@@ -54,6 +65,8 @@ public class PanelInsertar extends JPanel {
 
         add(panelBoton, BorderLayout.SOUTH);
 
+        // -- Listener del botón Guardar --
+        // Complejidad Temporal: O(log n) por la inserción en BST + O(n) por el refresco de tabla.
         btnGuardar.addActionListener(e -> {
 
             try {
@@ -126,6 +139,16 @@ public class PanelInsertar extends JPanel {
         });
     }
 
+    /**
+     * Método auxiliar para agregar una fila (etiqueta + campo de texto) al formulario.
+     * * @param panel Panel contenedor.
+     * @param gbc Restricciones del GridBagLayout.
+     * @param fila Número de fila actual.
+     * @param texto Texto de la etiqueta.
+     * @param campo Componente de campo de texto.
+     * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     private void addRow(JPanel panel, GridBagConstraints gbc, int fila, String texto, JComponent campo) {
 
         gbc.gridx = 0;

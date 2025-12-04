@@ -3,6 +3,7 @@ package Calificaciones.Estructuras;
 /**
  * Clase genérica que implementa una estructura de datos tipo Cola (Queue).
  * Utiliza nodos enlazados para almacenar los elementos.
+ * * <p>Complejidad Espacial General: O(n), donde n es el número de elementos en la cola.</p>
  *
  * @param <T> El tipo de dato que almacenará la cola.
  */
@@ -14,6 +15,8 @@ public class Cola<T> {
     /**
      * Constructor por defecto.
      * Inicializa una cola vacía.
+     * * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public Cola() {
         this.inicio = null;
@@ -25,6 +28,8 @@ public class Cola<T> {
      * Verifica si la cola está vacía.
      *
      * @return true si la cola no contiene elementos, false en caso contrario.
+     * * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public boolean esVacia() {
         return inicio == null;
@@ -32,8 +37,11 @@ public class Cola<T> {
 
     /**
      * Agrega un nuevo elemento al final de la cola.
+     * Se aprovecha el puntero 'fin' para realizar la inserción constante.
      *
      * @param dato El elemento a agregar.
+     * * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1) (Crea un nuevo nodo)</p>
      */
     public void encolar(T dato) {
         Nodo<T> aux = new Nodo<>(dato);
@@ -51,6 +59,8 @@ public class Cola<T> {
      * Elimina y devuelve el elemento que se encuentra al frente de la cola.
      *
      * @return El elemento del frente de la cola, o null si la cola está vacía.
+     * * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public T desencolar() {
         if (esVacia()) {
@@ -71,6 +81,8 @@ public class Cola<T> {
      * Obtiene el elemento que se encuentra al frente de la cola sin eliminarlo.
      *
      * @return El elemento del frente de la cola, o null si la cola está vacía.
+     * * <p>Complejidad Temporal: O(1)</p>
+     * <p>Complejidad Espacial: O(1)</p>
      */
     public T frente(){
         // -- Operacion ternaria si recibe true devolvemos null, si contiene algo mandamos el dato del nodo inicio

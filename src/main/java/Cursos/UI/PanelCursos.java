@@ -1,6 +1,5 @@
 package Cursos.UI;
 
-import Cursos.Modelo.Curso;
 import Cursos.Modelo.GestionarCursos;
 import Main.DatosGlobales;
 
@@ -8,7 +7,14 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+/**
+ * Panel de interfaz gráfica para la gestión del catálogo de cursos (Altas y Bajas).
+ * Permite agregar nuevos cursos y eliminarlos, visualizando los datos en una tabla.
+ * <p>Complejidad Espacial General: O(1) (Referente a la lógica de control, sin contar componentes Swing).</p>
+ */
 public class PanelCursos extends JPanel {
 
     private GestionarCursos gestor;
@@ -20,16 +26,21 @@ public class PanelCursos extends JPanel {
 
     private JTable tablaCursos;
     private DefaultTableModel modeloTabla;
-
     private JLabel lblEstado;
 
+    /**
+     * Constructor del panel de cursos.
+     * Inicializa los componentes y carga los datos existentes en la tabla.
+     * <p>Complejidad Temporal: O(1) (Inicialización) + O(n) (Carga inicial de datos).</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     public PanelCursos() {
-        gestor = DatosGlobales.cursos;
+        this.gestor = DatosGlobales.cursos;
         initUI();
+        cargarDatosTabla();
     }
 
     private void initUI() {
-
         setLayout(new BorderLayout(5, 5));
         setBackground(new Color(245, 245, 245));
 
@@ -41,14 +52,13 @@ public class PanelCursos extends JPanel {
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         header.add(titulo);
         add(header, BorderLayout.NORTH);
-        
-        // -- PANEL IZQUIERDO (Formulario)
+
+        // ==== PANEL IZQUIERDO: FORMULARIO ====
         JPanel panelIzquierdo = new JPanel(new BorderLayout());
         panelIzquierdo.setPreferredSize(new Dimension(320, 0));
         panelIzquierdo.setBorder(new EmptyBorder(10, 10, 10, 10));
         panelIzquierdo.setOpaque(false);
 
-        // ==== PANEL IZQUIERDO: FORMULARIO ====
         JPanel panelForm = new JPanel(new GridBagLayout());
         panelForm.setBorder(BorderFactory.createTitledBorder("Datos del curso"));
         panelForm.setBackground(Color.WHITE);
@@ -57,60 +67,45 @@ public class PanelCursos extends JPanel {
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campo Clave
-        gbc.gridx = 0; 
-        gbc.gridy = 0;
-        gbc.weightx = 0;
+        // Campos
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0;
         panelForm.add(new JLabel("Clave:"), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
+        gbc.gridx = 1; gbc.weightx = 1.0;
         txtClave = new JTextField();
         panelForm.add(txtClave, gbc);
-        
 
-        // Campo Nombre
         gbc.gridx = 0; gbc.gridy = 1;
         panelForm.add(new JLabel("Nombre:"), gbc);
         gbc.gridx = 1;
         txtNombre = new JTextField();
         panelForm.add(txtNombre, gbc);
 
-        // Campo Cupo Máximo
         gbc.gridx = 0; gbc.gridy = 2;
         panelForm.add(new JLabel("Cupo máximo:"), gbc);
         gbc.gridx = 1;
         txtCupoMax = new JTextField();
         panelForm.add(txtCupoMax, gbc);
 
-        // Botón agregar
-        gbc.gridx = 0; gbc.gridy = 3;
-        gbc.gridwidth = 2;
+        // --- BOTÓN AGREGAR (AZUL) ---
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
         JButton btnAgregar = new JButton("Agregar Curso");
-        btnAgregar.setBackground(new Color(9, 132, 227));
-        btnAgregar.setForeground(Color.WHITE);
+        configurarBoton(btnAgregar, new Color(9, 132, 227), new Color(9, 132, 227));
         panelForm.add(btnAgregar, gbc);
 
-        // Botón eliminar
+        // --- BOTÓN ELIMINAR (ROJO) ---
         gbc.gridy = 4;
         JButton btnEliminar = new JButton("Eliminar Curso");
-        btnEliminar.setBackground(new Color(214, 48, 49));
-        btnEliminar.setForeground(Color.WHITE);
+        configurarBoton(btnEliminar, new Color(231, 76, 60), new Color(192, 57, 43));
         panelForm.add(btnEliminar, gbc);
 
-        // ==== Panel izquierdo contenedor ====
-        JPanel panelIzq = new JPanel(new BorderLayout());
-        panelIzq.setPreferredSize(new Dimension(320, 0));
-        panelIzq.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelIzq.setOpaque(false);
-        panelIzq.add(panelForm, BorderLayout.NORTH);
-
-        add(panelIzq, BorderLayout.WEST);
+        panelIzquierdo.add(panelForm, BorderLayout.NORTH);
+        add(panelIzquierdo, BorderLayout.WEST);
 
         // ==== PANEL CENTRAL: TABLA ====
-
         modeloTabla = new DefaultTableModel(new Object[]{"Clave", "Nombre", "Cupo"}, 0);
         tablaCursos = new JTable(modeloTabla);
         tablaCursos.setRowHeight(25);
+        tablaCursos.getTableHeader().setBackground(new Color(223, 230, 233));
 
         JScrollPane scroll = new JScrollPane(tablaCursos);
         scroll.setBorder(BorderFactory.createTitledBorder("Lista de cursos"));
@@ -123,25 +118,41 @@ public class PanelCursos extends JPanel {
         add(panelCentral, BorderLayout.CENTER);
 
         // ==== BARRA DE ESTADO ====
-
         JPanel panelEstado = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelEstado.setBackground(Color.WHITE);
-
         lblEstado = new JLabel(" Sistema listo.");
         panelEstado.add(lblEstado);
-
         add(panelEstado, BorderLayout.SOUTH);
 
         // ==== LISTENERS ====
-
         btnAgregar.addActionListener(e -> agregarCurso());
         btnEliminar.addActionListener(e -> eliminarCurso());
     }
 
-    // ============================
-    //  MÉTODOS DE FUNCIONALIDAD
-    // ============================
+    // --- MÉTODO PARA ESTILAR BOTONES (EL QUE ARREGLA NIMBUS) ---
+    private void configurarBoton(JButton btn, Color bgColor, Color borderColor) {
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btn.setBackground(bgColor);
+        btn.setContentAreaFilled(false);
+        btn.setOpaque(true);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(borderColor, 1),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) { btn.setBackground(bgColor.brighter()); }
+            public void mouseExited(MouseEvent evt) { btn.setBackground(bgColor); }
+        });
+    }
 
+    /**
+     * Valida los datos y agrega un nuevo curso al sistema.
+     * <p>Complejidad Temporal: O(n) (La inserción es O(1), pero se refresca la tabla completa O(n)).</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     private void agregarCurso() {
         try {
             String clave = txtClave.getText().trim();
@@ -152,69 +163,42 @@ public class PanelCursos extends JPanel {
                 JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
                 return;
             }
-
             int cupo = Integer.parseInt(cupoStr);
-
             gestor.agregarCurso(clave, nombre, cupo);
-
-            modeloTabla.addRow(new Object[]{
-                    clave, nombre, cupo
-            });
-
+            cargarDatosTabla();
             lblEstado.setText(" Curso agregado: " + clave);
-
-            limpiarCampos();
-
+            txtClave.setText(""); txtNombre.setText(""); txtCupoMax.setText("");
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "El cupo debe ser un número entero");
         }
     }
 
+    /**
+     * Elimina el curso seleccionado en la tabla.
+     * <p>Complejidad Temporal: O(n) (La eliminación es O(1), pero se refresca la tabla completa O(n)).</p>
+     * <p>Complejidad Espacial: O(1)</p>
+     */
     private void eliminarCurso() {
         int fila = tablaCursos.getSelectedRow();
-
         if (fila == -1) {
             JOptionPane.showMessageDialog(this, "Selecciona un curso en la tabla");
             return;
         }
-
         String clave = modeloTabla.getValueAt(fila, 0).toString();
-
         gestor.eliminarCurso(clave);
-
-        modeloTabla.removeRow(fila);
-
+        cargarDatosTabla();
         lblEstado.setText(" Curso eliminado: " + clave);
     }
 
-    private void limpiarCampos() {
-        txtClave.setText("");
-        txtNombre.setText("");
-        txtCupoMax.setText("");
-    }
-    
-    public static void main(String[] args) {
-        try {
-            // Aplicar Look and Feel Nimbus
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-
-            // Ventana de prueba
-            JFrame ventana = new JFrame("Prueba Panel de Cursos");
-            ventana.setSize(950, 600);
-            ventana.setLocationRelativeTo(null);
-
-            PanelCursos panel = new PanelCursos();
-            ventana.add(panel);
-
-            ventana.setVisible(true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+    /**
+     * Recarga todos los datos de los cursos en la tabla visual.
+     * <p>Complejidad Temporal: O(n), donde n es el número de cursos registrados (debe recorrer el hash map y llenar la tabla).</p>
+     * <p>Complejidad Espacial: O(n) (Lista temporal para obtener valores).</p>
+     */
+    private void cargarDatosTabla() {
+        modeloTabla.setRowCount(0);
+        for(Cursos.Modelo.Curso c : gestor.obtenerTodosLosCursos()) {
+            modeloTabla.addRow(new Object[]{c.getClave(), c.getNombre(), c.getCupoMaximo()});
         }
     }
 }
