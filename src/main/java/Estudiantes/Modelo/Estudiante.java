@@ -14,7 +14,7 @@ public class Estudiante<T> {
         this.numeroTelefono = numeroTelefono;
         this.correo = correo;
         this.direccion = direccion;
-        this.calificaciones = new Calificaciones<T>(0);
+        this.calificaciones = new Calificaciones<T>(10);
     }
 
     public int getMatricula() {

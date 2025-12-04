@@ -2,6 +2,7 @@ package Cursos.UI;
 
 import Cursos.Modelo.Curso;
 import Cursos.Modelo.GestionarCursos;
+import Main.DatosGlobales;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -23,7 +24,7 @@ public class PanelCursos extends JPanel {
     private JLabel lblEstado;
 
     public PanelCursos() {
-        gestor = new GestionarCursos();
+        gestor = DatosGlobales.cursos;
         initUI();
     }
 
@@ -193,28 +194,27 @@ public class PanelCursos extends JPanel {
     }
     
     public static void main(String[] args) {
-    try {
-        // Aplicar Look and Feel Nimbus
-        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                UIManager.setLookAndFeel(info.getClassName());
-                break;
+        try {
+            // Aplicar Look and Feel Nimbus
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+
+            // Ventana de prueba
+            JFrame ventana = new JFrame("Prueba Panel de Cursos");
+            ventana.setSize(950, 600);
+            ventana.setLocationRelativeTo(null);
+
+            PanelCursos panel = new PanelCursos();
+            ventana.add(panel);
+
+            ventana.setVisible(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        // Ventana de prueba
-        JFrame ventana = new JFrame("Prueba Panel de Cursos");
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setSize(950, 600);
-        ventana.setLocationRelativeTo(null);
-
-        PanelCursos panel = new PanelCursos();
-        ventana.add(panel);
-
-        ventana.setVisible(true);
-
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
 }

@@ -1,0 +1,151 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam arrowColor #444
+skinparam classBorderColor #333
+skinparam classBackgroundColor #F7F7F7
+
+title Sistema de Cursos – Modelo y Estructuras (UML Ordenado)
+
+' ===========================================================
+' PAQUETE: Cursos.Estructuras – Nodos y Contenedores
+' ===========================================================
+package "Cursos.Estructuras" {
+
+    package "Nodos" {
+        class NodoSimple<T> {
+            T dato
+            NodoSimple sig
+        }
+
+        class NodoAVL {
+            double promedio
+            Estudiante estudiante
+            int altura
+            NodoAVL izq
+            NodoAVL der
+        }
+
+        class Dir<K,V> {
+            K clave
+            V valor
+        }
+    }
+
+    package "Listas" {
+        class ListaSimple<T> {
+            - NodoSimple inicio
+            - NodoSimple fin
+            - int size
+            + agregarInicio(T)
+            + agregarFinal(T)
+            + eliminarSi(Predicate) : boolean
+            + size() : int
+            + iterator()
+        }
+
+        class ListaCircularSimple<T> {
+            - NodoSimple cabeza
+            - NodoSimple actual
+            - int size
+            + agregar(T)
+            + estaVacia() : boolean
+            + obtenerActual() : T
+            + rotar() : T
+        }
+
+        class ListaDobleCircular<T> {
+            ..interno Nodo..
+            - Nodo cabeza
+            - int size
+            + agregar(T)
+            + size() : int
+            + mostrarN(int)
+        }
+    }
+
+    package "Estructuras de Acceso" {
+        class DiccionarioHash<K,V> {
+            - ListaSimple<Dir<K,V>>[] tabla
+            - int capacidad
+            + insertar(K,V)
+            + obtener(K) : V
+            + eliminar(K) : boolean
+            + mostrar()
+        }
+    }
+}
+
+' Relaciones internas
+ListaSimple --> NodoSimple : usa >
+ListaCircularSimple --> NodoSimple : usa >
+DiccionarioHash --> ListaSimple : tiene buckets >
+DiccionarioHash --> Dir : almacena >
+
+
+' ===========================================================
+' PAQUETE: Cursos.Modelo – Lógica de Cursos
+' ===========================================================
+package "Cursos.Modelo" {
+
+    class Curso {
+        - String clave
+        - String nombre
+        - int cupoMaximo
+        - ListaSimple inscritos
+        - ListaDobleCircular listaEspera
+        - ListaCircularSimple roles
+        + hayCupo() : boolean
+        + agregarInscrito(Estudiante)
+        + agregarListaEspera(Estudiante)
+        + agregarRol(Estudiante)
+        + rotarRol() : Estudiante
+    }
+
+    class GestionarCursos {
+        - DiccionarioHash<String, Curso> cursos
+        + agregarCurso(String,String,int)
+        + eliminarCurso(String)
+        + listarCursos()
+        + obtenerCurso(String) : Curso
+    }
+
+    class ControlInscripciones {
+        - ControlEstudiantes controlEstudiantes
+        - GestionarCursos controlCursos
+        + inscribir(int matricula, String claveCurso)
+    }
+
+    class ControlRoles {
+        - GestionarCursos gestorCursos
+        + rotarRol(String claveCurso)
+    }
+
+    class AVL_Promedios {
+        - NodoAVL raiz
+        + insertar(double promedio, Estudiante estudiante)
+        + inOrden()
+    }
+}
+
+' Relaciones del Modelo
+GestionarCursos --> DiccionarioHash : contiene >
+GestionarCursos --> Curso : administra >
+
+Curso --> ListaSimple : inscritos >
+Curso --> ListaDobleCircular : listaEspera >
+Curso --> ListaCircularSimple : roles >
+
+ControlInscripciones --> GestionarCursos : usa >
+ControlInscripciones --> ControlEstudiantes : consulta estudiantes >
+ControlInscripciones --> Curso : inscribe >
+ControlInscripciones --> Estudiante : asigna >
+
+ControlRoles --> GestionarCursos : usa >
+ControlRoles --> Curso : rota roles >
+
+AVL_Promedios --> NodoAVL : estructura >
+AVL_Promedios --> Estudiante : almacena información >
+
+@enduml

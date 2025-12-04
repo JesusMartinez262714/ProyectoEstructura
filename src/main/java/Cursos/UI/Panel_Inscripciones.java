@@ -8,6 +8,7 @@ import Cursos.Modelo.Curso;
 import Cursos.Modelo.GestionarCursos;
 import Estudiantes.ControlEstudiantes;
 import Estudiantes.Modelo.Estudiante;
+import Main.DatosGlobales;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -30,7 +31,7 @@ public class Panel_Inscripciones extends JPanel {
     private JLabel lblEstado;
 
     public Panel_Inscripciones() {
-        gestor = new GestionarCursos();
+        gestor = DatosGlobales.cursos;
         initUI();
     }
 
@@ -213,9 +214,7 @@ public class Panel_Inscripciones extends JPanel {
     }
 
 
-    // ============================
-    //    MÉTODO MAIN DE PRUEBA
-    // ============================
+
     public static void main(String[] args) {
 
         try {

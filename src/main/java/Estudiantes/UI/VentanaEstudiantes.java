@@ -5,10 +5,11 @@ import java.awt.*;
 import Estudiantes.Estructuras.BSTEstudiantes;
 import Estudiantes.UI.Paneles.PanelFormulario;
 import Estudiantes.UI.Paneles.PanelTablaEstudiantes;
+import Main.DatosGlobales;
 
 public class VentanaEstudiantes extends JFrame {
 
-    public static BSTEstudiantes arbolito = new BSTEstudiantes();
+    public static BSTEstudiantes arbolito = DatosGlobales.estudiantes;
     public static PanelTablaEstudiantes panelTabla;
     public static PanelFormulario panelFormulario;
 
@@ -16,7 +17,6 @@ public class VentanaEstudiantes extends JFrame {
 
         setTitle("Gestión de Estudiantes (BST)");
         setSize(1100, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         panelTabla = new PanelTablaEstudiantes(arbolito);

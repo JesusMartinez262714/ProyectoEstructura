@@ -1,0 +1,101 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam arrowColor #333
+skinparam classBorderColor #333
+skinparam classBackgroundColor #EEE
+
+title Sistema de Gestión de Estudiantes – UML por Paquetes
+
+' ===========================================================
+' PAQUETE: Estudiantes.Modelo
+' ===========================================================
+package "Estudiantes.Modelo" {
+
+    class Estudiante {
+        - int matricula
+        - String nombreCompleto
+        - String numeroTelefono
+        - String correo
+        - Direccion direccion
+        - Calificaciones calificaciones
+        + getPromedio() : float
+    }
+
+    class Direccion {
+        - String calle
+        - String numero
+        - String colonia
+        - String ciudad
+    }
+
+    class Calificaciones<T> {
+        - T[] calificaciones
+        - int tamanio
+        - int capacidad
+        + agregarCalificacion(T)
+        + eliminarCalificacion(int)
+        + modificarCalificacion(int, T)
+        + obtenerCalificacion(int) : T
+        + calcularPromedio() : float
+    }
+
+    class NodoBST {
+        - Estudiante estudiante
+        - NodoBST izquierdo
+        - NodoBST derecho
+        + esHoja() : boolean
+        + tieneUnHijo() : boolean
+        + tieneDosHijos() : boolean
+    }
+}
+
+' Relaciones internas del paquete Modelo
+Estudiante --> Direccion : tiene >
+Estudiante --> Calificaciones : tiene >
+NodoBST --> Estudiante : contiene >
+
+
+' ===========================================================
+' PAQUETE: Estudiantes.Estructuras
+' ===========================================================
+package "Estudiantes.Estructuras" {
+
+    class BSTEstudiantes {
+        - NodoBST raiz
+        + insertarEstudiante(Estudiante)
+        + eliminar(int)
+        + buscarEstudiante(int) : NodoBST
+        + contarNodos() : int
+        + obtenerEnPosicion(int) : Estudiante
+    }
+}
+
+BSTEstudiantes --> NodoBST : usa >
+
+
+' ===========================================================
+' PAQUETE: Estudiantes
+' ===========================================================
+package "Estudiantes" {
+
+    class ControlEstudiantes {
+        - static BSTEstudiantes arbol
+        + insertar(Estudiante)
+        + eliminar(int)
+        + buscar(int) : Estudiante
+        + existe(int) : boolean
+        + obtenerEnPosicion(int) : Estudiante
+        + agregarCalificacion(int, float)
+        + modificarCalificacion(int, int, float)
+        + eliminarCalificacion(int, int)
+        + obtenerPromedio(int) : float
+    }
+}
+
+ControlEstudiantes --> BSTEstudiantes : administra >
+ControlEstudiantes --> Estudiante : gestiona >
+ControlEstudiantes --> NodoBST : recibe de búsqueda >
+
+@enduml

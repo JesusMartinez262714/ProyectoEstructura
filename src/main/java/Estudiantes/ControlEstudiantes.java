@@ -4,12 +4,12 @@ import Cursos.Modelo.AVL_Promedios;
 import Estudiantes.Estructuras.BSTEstudiantes;
 import Estudiantes.Modelo.Estudiante;
 import Estudiantes.Modelo.NodoBST;
+import Main.DatosGlobales;
 
 public class ControlEstudiantes {
 
 
-    private static final BSTEstudiantes arbol = new BSTEstudiantes();
-
+    private static final BSTEstudiantes arbol = DatosGlobales.estudiantes;
 
     public static int contar() {
         return arbol.contarNodos();
