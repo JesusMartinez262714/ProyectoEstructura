@@ -3,11 +3,24 @@ package Calificaciones.Modelo;
 import Calificaciones.Estructuras.Pila;
 import Estudiantes.ControlEstudiantes;
 import Estudiantes.Modelo.Estudiante;
+import Cursos.Modelo.ControlInscripciones;
 
 public class ControlAcciones {
 
     // -- Pila estatica compartida
     private static final Pila<Accion> pilaGlobal = new Pila<>();
+
+    private static ControlInscripciones gestorInscripciones;
+
+    /**
+     * Establece el gestor de inscripciones necesario para revertir acciones
+     * relacionadas con cursos (inscripciones y bajas).
+     *
+     * @param gestor La instancia del controlador de inscripciones.
+     */
+    public static void setGestorInscripciones(ControlInscripciones gestor) {
+        gestorInscripciones = gestor;
+    }
 
     /**
      * Cualquier módulo (Estudiantes, Cursos, Calificaciones) llama a este método
@@ -32,21 +45,9 @@ public class ControlAcciones {
         // -- Evaluamos que tipo de acción fue
         return switch (accion.getTipo()) {
             case CAMBIO_CALIFICACION -> deshacerCalificacion(accion);
-            case REGISTRO_ESTUDIANTE ->
-                // Logica para borrar un estudiante recien creado
-                // int mat = (int) accion.getDatoNuevo();
-                // ControlEstudiantes.eliminar(mat);
-                    "Se deshizo el registro del último estudiante.";
-            case INSCRIPCION_CURSO ->
-                // Logica para sacar a un alumno de un curso
-                // String cursoID = ...;
-                // ControlCursos.darBaja(matricula, cursoID);
-                    "Se cancelo la ultima inscripcion.";
-            case BAJA_CURSO ->
-                // Lógica: Si se dio de baja, deshacer es VOLVER A INSCRIBIR
-                // Recuperar datos: Alumno y Curso
-                // ControlCursos.inscribir(matricula, cursoID);
-                    "Se ha restaurado la inscripción al curso (Deshacer Baja).";
+            case REGISTRO_ESTUDIANTE -> deshacerRegistro(accion);
+            case INSCRIPCION_CURSO -> deshacerInscripcion(accion);
+            case BAJA_CURSO -> deshacerBaja(accion);
             default -> "Tipo de accion desconocida.";
         };
     }
@@ -84,5 +85,60 @@ public class ControlAcciones {
         } else {
             return "No se pudo deshacer: El estudiante no tiene calificaciones.";
         }
+    }
+
+    /**
+     * Deshace el registro de un nuevo estudiante eliminándolo del sistema.
+     *
+     * @param accion La acción a deshacer, que contiene la matrícula del estudiante creado.
+     * @return Mensaje confirmando la eliminación del estudiante.
+     * @throws Exception Si ocurre un error al eliminar.
+     */
+    private static String deshacerRegistro(Accion accion) throws Exception {
+        int mat = (int) accion.getDatoNuevo();
+        ControlEstudiantes.eliminar(mat);
+        return "Se deshizo el registro del estudiante: " + mat;
+    }
+
+    /**
+     * Deshace la inscripción de un estudiante a un curso, dándolo de baja.
+     *
+     * @param accion La acción a deshacer, con los datos de matrícula y curso.
+     * @return Mensaje confirmando la cancelación de la inscripción.
+     * @throws Exception Si el módulo de cursos no está conectado.
+     */
+    private static String deshacerInscripcion(Accion accion) throws Exception {
+        if (gestorInscripciones == null) throw new Exception("Error: Modulo Cursos no conectado.");
+
+        // Recuperamos datos guardados [0]=Matricula, [1]=CursoID
+        Object[] datos = (Object[]) accion.getDatoNuevo();
+        int mat = (int) datos[0];
+        String curso = (String) datos[1];
+
+        // Lógica Inversa: Si se inscribió, deshacemos dando de BAJA
+        if (gestorInscripciones.darBaja(mat, curso)) {
+            return "Se cancelo la inscripcion de " + mat + " en " + curso;
+        } else {
+            return "No se pudo deshacer la inscripción (El alumno ya no estaba en el curso).";
+        }
+    }
+
+    /**
+     * Deshace la baja de un estudiante de un curso, volviéndolo a inscribir.
+     *
+     * @param accion La acción a deshacer, con los datos de matrícula y curso.
+     * @return Mensaje confirmando la restauración de la inscripción.
+     * @throws Exception Si el módulo de cursos no está conectado.
+     */
+    private static String deshacerBaja(Accion accion) throws Exception {
+        if (gestorInscripciones == null) throw new Exception("Error: Modulo Cursos no conectado.");
+
+        Object[] datos = (Object[]) accion.getDatoNuevo();
+        int mat = (int) datos[0];
+        String curso = (String) datos[1];
+
+        // Lógica Inversa: Si se dio de baja, deshacemos volviendo a INSCRIBIR
+        gestorInscripciones.inscribir(mat, curso);
+        return "Se restauro la inscripcion de " + mat + " en " + curso;
     }
 }

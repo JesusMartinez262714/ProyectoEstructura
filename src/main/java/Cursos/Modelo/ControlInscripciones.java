@@ -52,5 +52,19 @@ public class ControlInscripciones {
             System.out.println("Curso lleno. El estudiante fue agregado a la LISTA DE ESPERA.");
         }
     }
+
+    public boolean darBaja(int matricula, String claveCurso) {
+
+        Curso c = controlCursos.obtenerCurso(claveCurso);
+        if (c == null) return false;
+
+
+        boolean eliminado = c.getInscritos().eliminarSi(est -> est.getMatricula() == matricula);
+
+        if (eliminado) {
+            System.out.println(">> DESHACER: Alumno " + matricula + " eliminado del curso " + claveCurso);
+        }
+        return eliminado;
+    }
 }
 
