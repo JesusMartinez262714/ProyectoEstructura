@@ -176,28 +176,44 @@ public class PanelCalificaciones extends JPanel {
          * y se actualiza la tabla visual.
          */
         private void encolarSolicitud() {
+
+            String mat = txtMatricula.getText().trim();
+            String cur = txtCurso.getText().trim().toUpperCase();
+            String notaTxt = txtCalificacion.getText().trim();
+
+            if (!Validador.hayTexto(mat) || !Validador.hayTexto(cur) || !Validador.hayTexto(notaTxt)) {
+                mostrarError("Error: Todos los campos son obligatorios.");
+                return;
+            }
+
+            if (!Validador.esMatriculaValida(mat)) {
+                mostrarError("Error en Matrícula: Solo se permiten números enteros (Ej: 1111).");
+                return;
+            }
+
+            if (!Validador.esCursoValido(cur)) {
+                mostrarError("Error en Curso: Debe tener entre 3 y 7 caracteres alfanuméricos (Ej: MAT101).");
+                return;
+            }
+
+            if (!Validador.esNotaValida(notaTxt)) {
+                mostrarError("Error en Nota: Debe ser un número entre 0 y 100.");
+                return;
+            }
+
             try {
-                String mat = txtMatricula.getText();
-                String cur = txtCurso.getText();
+                float cal = Float.parseFloat(notaTxt);
 
-                if (mat.isEmpty() || cur.isEmpty() || txtCalificacion.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
-                    return;
-                }
+                SolicitudCalificacion sol = new SolicitudCalificacion(mat, cur, cal);
 
-                float cal = Float.parseFloat(txtCalificacion.getText());
+                colaSolicitudes.encolar(sol);
+                modeloTabla.agregarSolicitud(sol);
 
-                // -- Creamos el objeto para poder meterlo a la cola
-                SolicitudCalificacion solicitud = new SolicitudCalificacion(mat, cur, cal);
-                colaSolicitudes.encolar(solicitud);
-
-                // -- Actualizamos la vista (Tabla)
-                modeloTabla.agregarSolicitud(solicitud);
-
-                lblEstado.setText(" Solicitud agregada: " + mat);
+                lblEstado.setText(" Encolado exitoso: " + mat);
                 limpiarCampos();
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "La calificacion debe ser un numero valido");
+
+            } catch (Exception ex) {
+                mostrarError("Ocurrió un error inesperado al guardar.");
             }
         }
 
@@ -265,7 +281,20 @@ public class PanelCalificaciones extends JPanel {
         txtCalificacion.setText("");
     }
 
-
+    /**
+     * Muestra un cuadro de diálogo con un mensaje de error.
+     * Se utiliza para notificar al usuario sobre fallos en la validación o errores en el procesamiento.
+     *
+     * @param mensaje El texto descriptivo del error a mostrar.
+     */
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(
+                this,
+                mensaje,
+                "Error de Validación",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
 
     /**
      * Método principal para ejecutar el panel de manera aislada.
