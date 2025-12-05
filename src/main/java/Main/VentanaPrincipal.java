@@ -114,15 +114,7 @@ public class VentanaPrincipal extends JFrame {
         mainContainer.add(gridPanel);
         add(mainContainer, BorderLayout.CENTER);
 
-        // --- FOOTER ---
-        JPanel footerPanel = new JPanel();
-        footerPanel.setBackground(COLOR_FONDO);
-        JLabel lblCopyright = new JLabel("Sistema Académico v1.0 - Estructuras de Datos");
-        lblCopyright.setForeground(Color.GRAY);
-        lblCopyright.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        footerPanel.add(lblCopyright);
 
-        add(footerPanel, BorderLayout.SOUTH);
     }
 
     /**
