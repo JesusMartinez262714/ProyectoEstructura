@@ -18,7 +18,6 @@ public class PrecargaDatos {
      */
     public static void cargar() {
         try {
-            System.out.println("--- INICIANDO CARGA DE DATOS PRE-CARGADOS ---");
 
 
             // Inserción de cursos: O(1) promedio por curso (Tabla Hash)
@@ -65,7 +64,6 @@ public class PrecargaDatos {
             // Inscribimos a Juan en Programación también
             inscribirManual(100, "PROG1");
 
-            System.out.println("--- DATOS DE PRUEBA CARGADOS EXITOSAMENTE ---");
 
         } catch (Exception e) {
             System.out.println("Error al cargar datos de prueba: " + e.getMessage());
