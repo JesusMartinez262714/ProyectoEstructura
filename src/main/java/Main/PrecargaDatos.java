@@ -91,13 +91,13 @@ public class PrecargaDatos {
             Cursos.Modelo.Curso curso = DatosGlobales.cursos.obtenerCurso(idCurso);
 
             if (est != null && curso != null) {
-                // Lo metemos a la lista de inscritos
+
                 curso.agregarInscrito(est);
-                // Lo metemos a la lista circular de roles (IMPORTANTE PARA ROTACIÓN)
+
                 curso.agregarRol(est);
             }
         } catch (Exception e) {
-            // Ignoramos errores aquí porque son datos controlados
+
         }
     }
 }
